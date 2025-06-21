@@ -6,7 +6,7 @@ header("Access-Control-Allow-Headers: Content-Type");
 include('connection.php');
 $connection = connection();
 
-$sql = "SELECT * FROM supercar_inventory";
+$sql = "SELECT * FROM product_fishing";
 $result = mysqli_query($connection, $sql);
 
 if (mysqli_num_rows($result) > 0) {
