@@ -1,4 +1,5 @@
 <?php
+header("Access-Control-Allow-Headers: *");
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: Content-Type");
@@ -12,12 +13,12 @@ $result = mysqli_query($connection, $sql);
 if (mysqli_num_rows($result) > 0) {
     $cars = [];
     while ($row = mysqli_fetch_assoc($result)) {
-        $cars[] = $row;
+        $items[] = $row;
     }
 
     echo json_encode([
         'status' => true,
-        'data' => $cars
+        'data' => $items
     ]);
 } else {
     echo json_encode([
