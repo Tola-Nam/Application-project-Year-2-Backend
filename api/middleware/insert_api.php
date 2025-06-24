@@ -5,12 +5,13 @@ header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 header("Cross-Origin-Resource-Policy: cross-origin");
-
 // DB connection
-$conn = new mysqli("localhost", "root", "", "applicationprojectbackendruppy2");
+$conn = new mysqli(hostname: "localhost", username: "root", password: "", database: "applicationprojectbackendruppy2");
 if ($conn->connect_error) {
-    echo json_encode(["success" => false, "message" => "DB Connection failed"]);
-    exit;
+    echo json_encode([
+        "success" => false,
+        "message" => "Database connection failed: "
+    ]);
 }
 
 // Get POST form data safely

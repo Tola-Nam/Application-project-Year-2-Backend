@@ -6,12 +6,18 @@ header("Content-Type: application/json");
 
 require_once('../middleware/connection.php');
 
-if (!isset($_GET['category'])) {
-    echo json_encode(["error" => "Invalid product category"]);
+// Optional: Handle CORS preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit;
 }
 
-$category = intval(value: $_GET['category']);
+if (!isset($_GET['category'])) {
+    echo json_encode(value: ["error" => "Invalid product category"]);
+    exit;
+}
+
+$category = $_GET['category'];
 
 $conn = connection();
 if ($conn->connect_error) {
@@ -25,7 +31,7 @@ if (!$stmt) {
     exit;
 }
 
-$stmt->bind_param("i", $category);
+$stmt->bind_param("s", $category);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -34,13 +40,13 @@ while ($row = $result->fetch_assoc()) {
     $products[] = $row;
 }
 
-if (count($products) > 0) {
-    echo json_encode([
+if (count(value: $products) > 0) {
+    echo json_encode(value: [
         "status" => true,
         "data" => $products
     ]);
 } else {
-    echo json_encode([
+    echo json_encode(value: [
         "status" => false,
         "message" => "No products found in this category"
     ]);
