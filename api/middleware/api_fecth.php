@@ -4,7 +4,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: Content-Type");
 
-include('connection.php');
+require_once('./connection.php');
 $connection = connection();
 
 $sql = "SELECT * FROM product_fishing";

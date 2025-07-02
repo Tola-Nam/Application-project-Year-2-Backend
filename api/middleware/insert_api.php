@@ -48,7 +48,8 @@ function upload_product_thumbnail($source_file): string
     }
 }
 
-// Process file upload and insert to DB
+//* Process file upload and insert to DB
+
 if (isset($_FILES['photo']) && $_FILES['photo']['error'] === 0) {
     try {
         $relativePath = upload_product_thumbnail($_FILES['photo']);
@@ -65,15 +66,13 @@ if (isset($_FILES['photo']) && $_FILES['photo']['error'] === 0) {
         $filepath = $conn->real_escape_string($relativePath);
 
         // SQL Insert
-        $sql = "INSERT INTO product_fishing 
-                (productName, category, brand, price, stock, description, thumbnail, length, color) 
-                VALUES 
-                ('$productName', '$category', '$brand', '$price', '$stock', '$description', '$filepath', '$length', '$color')";
+        $sql = "INSERT INTO product_fishing (productName, category, brand, price, stock, description, thumbnail, length, color) 
+                    VALUES ('$productName', '$category', '$brand', '$price', '$stock', '$description', '$filepath', '$length', '$color')";
 
         if ($conn->query($sql) === TRUE) {
             echo json_encode(["success" => true, "message" => "Upload and insert successful"]);
         } else {
-            echo json_encode(["success" => false, "message" => "DB Insert Error: " . $conn->error]);
+            echo json_encode(["success" => false, "message" => "DataBase Insert Error: " . $conn->error]);
         }
 
     } catch (Exception $e) {
