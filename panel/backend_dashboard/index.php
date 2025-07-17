@@ -1,539 +1,335 @@
-<!DOCTYPE html>
-<html lang="en">
+<template>
+  <div class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center space-x-8">
+            <div class="text-xl font-bold text-gray-900">Need Supply Co.</div>
+            <nav class="hidden md:flex space-x-8">
+              <a href="#" class="text-gray-700 hover:text-gray-900">Mens</a>
+              <a href="#" class="text-gray-700 hover:text-gray-900">Womens</a>
+              <a href="#" class="text-gray-700 hover:text-gray-900">Blog</a>
+            </nav>
+          </div>
+          <div class="flex items-center space-x-4">
+            <span class="text-sm text-gray-600">Call (5)</span>
+            <span class="text-sm text-gray-600">Currency</span>
+            <span class="text-sm text-gray-600">Account</span>
+            <span class="text-sm text-gray-600">Search</span>
+          </div>
+        </div>
+      </div>
+    </header>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .sidebar-item:hover {
-            background-color: rgba(99, 102, 241, 0.1);
-        }
+    <!-- Breadcrumb -->
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex items-center space-x-2 text-sm text-gray-500">
+        <a href="#" class="hover:text-gray-700">Home</a>
+        <span>/</span>
+        <a href="#" class="hover:text-gray-700">Mens</a>
+        <span>/</span>
+        <a href="#" class="hover:text-gray-700">Sweatshirts</a>
+        <span>/</span>
+        <span class="text-gray-900">Fleece Sweater</span>
+      </div>
+    </nav>
 
-        .stat-card {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.6) 100%);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-    </style>
-</head>
-
-<body class="bg-gray-900 text-white min-h-screen">
-    <!-- Sidebar -->
-    <div class="fixed left-0 top-0 h-full w-64 bg-gray-800 border-r border-gray-700 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300"
-        id="sidebar">
-        <!-- Logo -->
-        <div class="flex items-center px-6 py-4 border-b border-gray-700">
-            <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-store text-white text-sm"></i>
-                </div>
-                <span class="text-xl font-bold">StoreShop</span>
+    <!-- Product Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Product Images -->
+        <div class="flex flex-col-reverse lg:flex-row gap-4">
+          <!-- Thumbnail Images -->
+          <div class="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible">
+            <div
+                v-for="(image, index) in productImages"
+                :key="index"
+                class="flex-shrink-0 w-16 h-20 bg-gray-200 rounded cursor-pointer hover:opacity-75 transition-opacity"
+                :class="{ 'ring-2 ring-blue-500': selectedImageIndex === index }"
+                @click="selectedImageIndex = index"
+            >
+              <img
+                  :src="image"
+                  :alt="`Product view ${index + 1}`"
+                  class="w-full h-full object-cover rounded"
+              />
             </div>
+          </div>
+
+          <!-- Main Product Image -->
+          <div class="flex-1 bg-gray-100 rounded-lg overflow-hidden">
+            <img
+                :src="productImages[selectedImageIndex]"
+                alt="Fleece Sweater"
+                class="w-full h-full object-cover"
+            />
+          </div>
         </div>
 
-        <!-- Store Selector -->
-        <div class="px-4 py-3 border-b border-gray-700">
+        <!-- Product Details -->
+        <div class="flex flex-col">
+          <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">FLEECE SWEATER</h1>
+            <p class="text-gray-600 mb-4">Mens & Womens</p>
+            <div class="flex items-center space-x-4 mb-4">
+              <span class="text-sm text-gray-500">Size</span>
+              <span class="text-sm text-gray-500">XS</span>
+              <span class="text-sm text-gray-500">S</span>
+              <span class="text-sm text-gray-500">M</span>
+              <span class="text-sm text-gray-500">L</span>
+              <span class="text-sm text-gray-500">XL</span>
+            </div>
+            <div class="text-3xl font-bold text-gray-900 mb-6">${{ product.price }}</div>
+          </div>
+
+          <!-- Size Selection -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Size</label>
             <select
-                class="w-full bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-indigo-500">
-                <option>Banana Store</option>
-                <option>Apple Store</option>
-                <option>Orange Store</option>
+                v-model="selectedSize"
+                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select Size</option>
+              <option v-for="size in product.sizes" :key="size" :value="size">
+                {{ size }}
+              </option>
             </select>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex space-x-4 mb-8">
+            <button
+                @click="addToCart"
+                class="flex-1 bg-black text-white py-3 px-6 rounded-md hover:bg-gray-800 transition-colors font-medium"
+            >
+              Add to Cart
+            </button>
+            <button
+                @click="addToWishlist"
+                class="flex-1 bg-gray-200 text-gray-800 py-3 px-6 rounded-md hover:bg-gray-300 transition-colors font-medium"
+            >
+              Add to Wishlist
+            </button>
+          </div>
+
+          <!-- Product Info Tabs -->
+          <div class="border-b border-gray-200 mb-6">
+            <nav class="flex space-x-8">
+              <button
+                  v-for="tab in tabs"
+                  :key="tab.id"
+                  @click="activeTab = tab.id"
+                  class="py-2 px-1 border-b-2 font-medium text-sm transition-colors"
+                  :class="activeTab === tab.id
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'"
+              >
+                {{ tab.name }}
+              </button>
+            </nav>
+          </div>
+
+          <!-- Tab Content -->
+          <div class="mb-8">
+            <div v-if="activeTab === 'description'" class="text-gray-700">
+              <p class="mb-4">{{ product.description }}</p>
+              <ul class="space-y-2 text-sm">
+                <li v-for="feature in product.features" :key="feature">• {{ feature }}</li>
+              </ul>
+            </div>
+            <div v-else-if="activeTab === 'sizing'" class="text-gray-700">
+              <p>Size guide and measurements information.</p>
+            </div>
+            <div v-else-if="activeTab === 'shipping'" class="text-gray-700">
+              <p>Free shipping on orders over $100. Standard delivery 3-5 business days.</p>
+            </div>
+          </div>
+
+          <!-- Review Section -->
+          <div class="border-t border-gray-200 pt-6">
+            <div class="flex items-center space-x-2 mb-4">
+              <button class="flex items-center space-x-2 text-gray-600 hover:text-gray-800">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <span class="text-sm">Leave a review</span>
+              </button>
+            </div>
+          </div>
         </div>
-
-        <!-- Navigation -->
-        <nav class="mt-4">
-            <div class="px-4 space-y-1">
-                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-white bg-indigo-600 rounded-lg"
-                    data-route="dashboard">
-                    <i class="fas fa-chart-line mr-3"></i>
-                    Dashboard
-                </a>
-                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 hover:text-white rounded-lg"
-                    data-route="products">
-                    <i class="fas fa-box mr-3"></i>
-                    Products
-                </a>
-                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 hover:text-white rounded-lg"
-                    data-route="conversation">
-                    <i class="fas fa-comments mr-3"></i>
-                    Conversation
-                </a>
-                <a href="#"
-                    class="sidebar-item flex items-center px-4 py-3 text-gray-300 hover:text-white rounded-lg relative"
-                    data-route="analytics">
-                    <i class="fas fa-chart-bar mr-3"></i>
-                    Analytics
-                    <span class="absolute right-2 bg-orange-500 text-xs px-2 py-1 rounded-full">8</span>
-                </a>
-                <a href="#"
-                    class="sidebar-item flex items-center px-4 py-3 text-gray-300 hover:text-white rounded-lg relative"
-                    data-route="campaigns">
-                    <i class="fas fa-bullhorn mr-3"></i>
-                    Campaigns
-                    <span class="absolute right-2 bg-orange-500 text-xs px-2 py-1 rounded-full">1</span>
-                </a>
-                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 hover:text-white rounded-lg"
-                    data-route="audience">
-                    <i class="fas fa-users mr-3"></i>
-                    Audience
-                </a>
-                <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-300 hover:text-white rounded-lg"
-                    data-route="statistics">
-                    <i class="fas fa-chart-pie mr-3"></i>
-                    Statistics
-                </a>
-            </div>
-
-            <div class="mt-8 px-4">
-                <div class="border-t border-gray-700 pt-4 space-y-1">
-                    <a href="#"
-                        class="sidebar-item flex items-center px-4 py-3 text-gray-300 hover:text-white rounded-lg"
-                        data-route="settings">
-                        <i class="fas fa-cog mr-3"></i>
-                        Settings
-                    </a>
-                    <a href="#"
-                        class="sidebar-item flex items-center px-4 py-3 text-gray-300 hover:text-white rounded-lg"
-                        data-route="help">
-                        <i class="fas fa-question-circle mr-3"></i>
-                        Help Center
-                    </a>
-                </div>
-            </div>
-        </nav>
-
-        <!-- Dark Mode Toggle -->
-        <div class="absolute bottom-4 left-4 right-4">
-            <div class="flex items-center justify-between">
-                <span class="text-sm text-gray-400">Dark Mode</span>
-                <div class="relative">
-                    <input type="checkbox" class="sr-only" checked>
-                    <div class="w-10 h-6 bg-indigo-600 rounded-full shadow-inner"></div>
-                    <div class="absolute w-4 h-4 bg-white rounded-full shadow top-1 right-1 transition-transform"></div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <!-- Mobile Sidebar Overlay -->
-    <div class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden" id="sidebar-overlay"></div>
-
-    <!-- Main Content -->
-    <div class="lg:ml-64">
-        <!-- Top Bar -->
-        <header class="bg-gray-800 border-b border-gray-700 px-4 lg:px-6 py-4">
-            <div class="flex items-center justify-between">
-                <!-- Mobile Menu Button -->
-                <button class="lg:hidden text-gray-400 hover:text-white" id="mobile-menu-btn">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-
-                <!-- Search Bar -->
-                <div class="flex-1 max-w-md mx-4">
-                    <div class="relative">
-                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" placeholder="Search campaign, customer, etc..."
-                            class="w-full bg-gray-700 text-white pl-10 pr-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-indigo-500">
-                    </div>
-                </div>
-
-                <!-- Right Section -->
-                <div class="flex items-center space-x-4">
-                    <button class="text-gray-400 hover:text-white relative">
-                        <i class="fas fa-bell text-xl"></i>
-                        <span
-                            class="absolute -top-1 -right-1 bg-red-500 text-xs w-5 h-5 rounded-full flex items-center justify-center">3</span>
-                    </button>
-
-                    <div class="flex items-center space-x-3">
-                        <div
-                            class="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                            <span class="text-sm font-semibold">MJ</span>
-                        </div>
-                        <div class="hidden md:block">
-                            <div class="text-sm font-medium">Man</div>
-                            <div class="text-xs text-gray-400">Admin Store</div>
-                        </div>
-                        <i class="fas fa-chevron-down text-gray-400 text-sm"></i>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Dashboard Content -->
-        <main class="p-4 lg:p-6" id="main-content">
-            <!-- Dashboard Route -->
-            <div id="dashboard-content">
-                <!-- Page Header -->
-                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
-                    <div>
-                        <h1 class="text-2xl lg:text-3xl font-bold">Dashboard</h1>
-                        <p class="text-gray-400 mt-1">Here's your analytic details</p>
-                    </div>
-                    <div class="flex items-center space-x-3 mt-4 lg:mt-0">
-                        <button class="flex items-center px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">
-                            <i class="fas fa-filter mr-2"></i>
-                            Filter by
-                        </button>
-                        <button
-                            class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-                            <i class="fas fa-download mr-2"></i>
-                            Exports
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <!-- Total Sales -->
-                    <div class="stat-card rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center">
-                                <div class="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
-                                <span class="text-gray-300 text-sm">Total Sales</span>
-                            </div>
-                            <i class="fas fa-ellipsis-h text-gray-400"></i>
-                        </div>
-                        <div class="mb-2">
-                            <span class="text-2xl lg:text-3xl font-bold">$120,784.02</span>
-                        </div>
-                        <div class="flex items-center text-sm">
-                            <i class="fas fa-arrow-up text-green-400 mr-1"></i>
-                            <span class="text-green-400">12.3%</span>
-                            <span class="text-gray-400 ml-1">+$1,453.87 today</span>
-                        </div>
-                        <button class="text-indigo-400 text-sm mt-4 hover:underline">View Report →</button>
-                    </div>
-
-                    <!-- Total Orders -->
-                    <div class="stat-card rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center">
-                                <div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                                <span class="text-gray-300 text-sm">Total Orders</span>
-                            </div>
-                            <i class="fas fa-ellipsis-h text-gray-400"></i>
-                        </div>
-                        <div class="mb-2">
-                            <span class="text-2xl lg:text-3xl font-bold">28,834</span>
-                        </div>
-                        <div class="flex items-center text-sm">
-                            <i class="fas fa-arrow-up text-green-400 mr-1"></i>
-                            <span class="text-green-400">20.1%</span>
-                            <span class="text-gray-400 ml-1">+2,676 today</span>
-                        </div>
-                        <button class="text-indigo-400 text-sm mt-4 hover:underline">View Report →</button>
-                    </div>
-
-                    <!-- Visitors -->
-                    <div class="stat-card rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center">
-                                <div class="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
-                                <span class="text-gray-300 text-sm">Visitor</span>
-                            </div>
-                            <i class="fas fa-ellipsis-h text-gray-400"></i>
-                        </div>
-                        <div class="mb-2">
-                            <span class="text-2xl lg:text-3xl font-bold">18,896</span>
-                        </div>
-                        <div class="flex items-center text-sm">
-                            <i class="fas fa-arrow-down text-red-400 mr-1"></i>
-                            <span class="text-red-400">5.6%</span>
-                            <span class="text-gray-400 ml-1">-876 today</span>
-                        </div>
-                        <button class="text-indigo-400 text-sm mt-4 hover:underline">View Report →</button>
-                    </div>
-
-                    <!-- Refunded -->
-                    <div class="stat-card rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center">
-                                <div class="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
-                                <span class="text-gray-300 text-sm">Refunded</span>
-                            </div>
-                            <i class="fas fa-ellipsis-h text-gray-400"></i>
-                        </div>
-                        <div class="mb-2">
-                            <span class="text-2xl lg:text-3xl font-bold">2,876</span>
-                        </div>
-                        <div class="flex items-center text-sm">
-                            <i class="fas fa-arrow-up text-green-400 mr-1"></i>
-                            <span class="text-green-400">1.3%</span>
-                            <span class="text-gray-400 ml-1">+34 today</span>
-                        </div>
-                        <button class="text-indigo-400 text-sm mt-4 hover:underline">View Report →</button>
-                    </div>
-                </div>
-
-                <!-- Charts Section -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Revenue Chart -->
-                    <div class="lg:col-span-2 stat-card rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-6">
-                            <div>
-                                <h3 class="text-lg font-semibold mb-1">Revenue</h3>
-                                <div class="flex items-center">
-                                    <span class="text-2xl font-bold">$16,400</span>
-                                    <span class="text-gray-400 text-sm ml-2">12</span>
-                                    <div class="flex items-center ml-4">
-                                        <i class="fas fa-arrow-up text-green-400 mr-1"></i>
-                                        <span class="text-green-400 text-sm">+10%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <select class="bg-gray-700 text-white px-3 py-1 rounded border border-gray-600">
-                                <option>Month</option>
-                                <option>Week</option>
-                                <option>Year</option>
-                            </select>
-                        </div>
-                        <div class="h-64">
-                            <canvas id="revenueChart"></canvas>
-                        </div>
-                        <div class="flex items-center justify-center mt-4 space-x-6">
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-indigo-500 rounded-full mr-2"></div>
-                                <span class="text-sm text-gray-300">Profit</span>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-gray-500 rounded-full mr-2"></div>
-                                <span class="text-sm text-gray-300">Loss</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Traffic Channel -->
-                    <div class="stat-card rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-lg font-semibold">Traffic Channel</h3>
-                            <select class="bg-gray-700 text-white px-3 py-1 rounded border border-gray-600 text-sm">
-                                <option>All time</option>
-                                <option>Last 30 days</option>
-                                <option>Last 7 days</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center justify-center mb-6">
-                            <div class="relative w-32 h-32">
-                                <canvas id="trafficChart"></canvas>
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <span class="text-2xl font-bold">19%</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <div class="w-3 h-3 bg-indigo-500 rounded-full mr-3"></div>
-                                    <span class="text-sm">Direct</span>
-                                </div>
-                                <span class="text-sm font-semibold">50.5%</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <div class="w-3 h-3 bg-gray-500 rounded-full mr-3"></div>
-                                    <span class="text-sm">Referral</span>
-                                </div>
-                                <span class="text-sm font-semibold">30.5%</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <div class="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
-                                    <span class="text-sm">Organic</span>
-                                </div>
-                                <span class="text-sm font-semibold">19%</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Activity and Customer Tables -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-                    <!-- Recent Activity -->
-                    <div class="stat-card rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-lg font-semibold">Recent Activity</h3>
-                            <select class="bg-gray-700 text-white px-3 py-1 rounded border border-gray-600 text-sm">
-                                <option>Last 24h</option>
-                                <option>Last 7 days</option>
-                                <option>Last 30 days</option>
-                            </select>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
-                                <thead>
-                                    <tr class="text-gray-400 text-sm">
-                                        <th class="text-left pb-3">Customer</th>
-                                        <th class="text-left pb-3">Status</th>
-                                        <th class="text-left pb-3">Customer ID</th>
-                                        <th class="text-left pb-3">Retained</th>
-                                        <th class="text-left pb-3">Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="space-y-3">
-                                    <tr class="border-b border-gray-700">
-                                        <td class="py-3">
-                                            <div class="flex items-center">
-                                                <div
-                                                    class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center mr-3">
-                                                    <span class="text-sm">RR</span>
-                                                </div>
-                                                <div>
-                                                    <div class="font-medium">Ronald Richards</div>
-                                                    <div class="text-sm text-gray-400">ronald@email.com</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-3">
-                                            <span
-                                                class="px-2 py-1 bg-green-900 text-green-300 rounded text-xs">Member</span>
-                                        </td>
-                                        <td class="py-3 text-sm">#74568320</td>
-                                        <td class="py-3 text-sm">8 min ago</td>
-                                        <td class="py-3 text-sm font-medium">$12,408.20</td>
-                                    </tr>
-                                    <tr class="border-b border-gray-700">
-                                        <td class="py-3">
-                                            <div class="flex items-center">
-                                                <div
-                                                    class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center mr-3">
-                                                    <span class="text-sm">DS</span>
-                                                </div>
-                                                <div>
-                                                    <div class="font-medium">Darrell Steward</div>
-                                                    <div class="text-sm text-gray-400">steward.darrell@email.com</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-3">
-                                            <span class="px-2 py-1 bg-yellow-900 text-yellow-300 rounded text-xs">Signed
-                                                Up</span>
-                                        </td>
-                                        <td class="py-3 text-sm">#23134855</td>
-                                        <td class="py-3 text-sm">10 min ago</td>
-                                        <td class="py-3 text-sm font-medium">$201.50</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="py-3">
-                                            <div class="flex items-center">
-                                                <div
-                                                    class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center mr-3">
-                                                    <span class="text-sm">MM</span>
-                                                </div>
-                                                <div>
-                                                    <div class="font-medium">Marvin McKinney</div>
-                                                    <div class="text-sm text-gray-400">mckinney.marvin@email.com</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="py-3">
-                                            <span class="px-2 py-1 bg-blue-900 text-blue-300 rounded text-xs">New
-                                                Customer</span>
-                                        </td>
-                                        <td class="py-3 text-sm">#54394837</td>
-                                        <td class="py-3 text-sm">15 min ago</td>
-                                        <td class="py-3 text-sm font-medium">$2,856.03</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Placeholder for another chart or content -->
-                    <div class="stat-card rounded-xl p-6">
-                        <h3 class="text-lg font-semibold mb-6">Performance Overview</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-300">Conversion Rate</span>
-                                <span class="text-green-400 font-semibold">3.2%</span>
-                            </div>
-                            <div class="w-full bg-gray-700 rounded-full h-2">
-                                <div class="bg-green-400 h-2 rounded-full" style="width: 32%"></div>
-                            </div>
-
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-300">Average Order Value</span>
-                                <span class="text-blue-400 font-semibold">$124.50</span>
-                            </div>
-                            <div class="w-full bg-gray-700 rounded-full h-2">
-                                <div class="bg-blue-400 h-2 rounded-full" style="width: 68%"></div>
-                            </div>
-
-                            <div class="flex items-center justify-between">
-                                <span class="text-gray-300">Customer Retention</span>
-                                <span class="text-purple-400 font-semibold">87.5%</span>
-                            </div>
-                            <div class="w-full bg-gray-700 rounded-full h-2">
-                                <div class="bg-purple-400 h-2 rounded-full" style="width: 87%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Other Route Contents (hidden by default) -->
-            <div id="products-content" class="hidden">
-                <h1 class="text-3xl font-bold mb-6">Products</h1>
-                <div class="stat-card rounded-xl p-6">
-                    <p class="text-gray-300">Products management interface will be here...</p>
-                </div>
-            </div>
-
-            <div id="conversation-content" class="hidden">
-                <h1 class="text-3xl font-bold mb-6">Conversations</h1>
-                <div class="stat-card rounded-xl p-6">
-                    <p class="text-gray-300">Customer conversations interface will be here...</p>
-                </div>
-            </div>
-
-            <div id="analytics-content" class="hidden">
-                <h1 class="text-3xl font-bold mb-6">Analytics</h1>
-                <div class="stat-card rounded-xl p-6">
-                    <p class="text-gray-300">Advanced analytics dashboard will be here...</p>
-                </div>
-            </div>
-
-            <div id="campaigns-content" class="hidden">
-                <h1 class="text-3xl font-bold mb-6">Campaigns</h1>
-                <div class="stat-card rounded-xl p-6">
-                    <p class="text-gray-300">Marketing campaigns management will be here...</p>
-                </div>
-            </div>
-
-            <div id="audience-content" class="hidden">
-                <h1 class="text-3xl font-bold mb-6">Audience</h1>
-                <div class="stat-card rounded-xl p-6">
-                    <p class="text-gray-300">Audience segmentation and insights will be here...</p>
-                </div>
-            </div>
-
-            <div id="statistics-content" class="hidden">
-                <h1 class="text-3xl font-bold mb-6">Statistics</h1>
-                <div class="stat-card rounded-xl p-6">
-                    <p class="text-gray-300">Detailed statistics and reports will be here...</p>
-                </div>
-            </div>
-
-            <div id="settings-content" class="hidden">
-                <h1 class="text-3xl font-bold mb-6">Settings</h1>
-                <div class="stat-card rounded-xl p-6">
-                    <p class="text-gray-300">Application settings will be here...</p>
-                </div>
-            </div>
-
-            <div id="help-content" class="hidden">
-                <h1 class="text-3xl font-bold mb-6">Help Center</h1>
-                <div class="stat-card rounded-xl p-6">
-                    <p class="text-gray-300">Help documentation and support will be here...</p>
-                </div>
-            </div>
-        </main>
+    <!-- Related Products -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <h2 class="text-2xl font-bold text-gray-900 mb-8">Related</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        <div
+            v-for="item in relatedProducts"
+            :key="item.id"
+            class="group cursor-pointer"
+        >
+          <div class="bg-gray-100 rounded-lg overflow-hidden mb-3 aspect-square">
+            <img
+                :src="item.image"
+                :alt="item.name"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+          <h3 class="text-sm font-medium text-gray-900 mb-1">{{ item.name }}</h3>
+          <p class="text-sm text-gray-500 mb-1">{{ item.brand }}</p>
+          <p class="text-sm font-medium text-gray-900">${{ item.price }}</p>
+        </div>
+      </div>
     </div>
-</body>
 
-</html>
+    <!-- Recommended Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-gray-200">
+      <h2 class="text-2xl font-bold text-gray-900 mb-8">Recommended</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        <div
+            v-for="item in recommendedProducts"
+            :key="item.id"
+            class="group cursor-pointer"
+        >
+          <div class="bg-gray-100 rounded-lg overflow-hidden mb-3 aspect-square">
+            <img
+                :src="item.image"
+                :alt="item.name"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+          <h3 class="text-sm font-medium text-gray-900 mb-1">{{ item.name }}</h3>
+          <p class="text-sm text-gray-500 mb-1">{{ item.brand }}</p>
+          <p class="text-sm font-medium text-gray-900">${{ item.price }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, reactive } from 'vue'
+
+export default {
+  name: 'ProductPage',
+  setup() {
+    const selectedImageIndex = ref(0)
+    const selectedSize = ref('')
+    const activeTab = ref('description')
+
+    const productImages = [
+      'https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D',
+      'https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D',
+      'https://cloudinary-marketing-res.cloudinary.com/image/upload/w_1300/q_auto/f_auto/hiking_dog_mountain',
+      'https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg',
+      'https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D'
+    ]
+
+    const product = reactive({
+      name: 'Fleece Sweater',
+      price: 242.00,
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
+      description: 'An essential crew neck sweater from Norse & Outdoors. Features a comfortable, relaxed fit with premium fleece construction.',
+      features: [
+        'Premium fleece construction',
+        'Comfortable crew neck',
+        'Relaxed fit',
+        'Ribbed cuffs and hem', 
+        'Made in Germany'
+      ]
+    })
+
+    const tabs = [
+      { id: 'description', name: 'Description' },
+      { id: 'sizing', name: 'Sizing' },
+      { id: 'shipping', name: 'Shipping' }
+    ]
+
+    const relatedProducts = [
+      {
+        id: 1,
+        name: 'Organic Cotton Tee',
+        brand: 'Norse & Outdoors',
+        price: 89.00,
+        image: 'https://via.placeholder.com/200x250/4a4a4a/ffffff?text=Gray+Tee'
+      },
+      {
+        id: 2,
+        name: 'Denim Jacket',
+        brand: 'Norse & Outdoors',
+        price: 189.00,
+        image: 'https://images.pexels.com/photos/414612/pexels-photo-414612.jpeg?cs=srgb&dl=pexels-souvenirpixels-414612.jpg&fm=jpg'
+      }
+    ]
+
+    const recommendedProducts = [
+      {
+        id: 1,
+        name: 'Merino Wool Scarf',
+        brand: 'Norse & Outdoors',
+        price: 75.00,
+        image: 'https://images.ctfassets.net/hrltx12pl8hq/28ECAQiPJZ78hxatLTa7Ts/2f695d869736ae3b0de3e56ceaca3958/free-nature-images.jpg?fit=fill&w=1200&h=630'
+      },
+      {
+        id: 2,
+        name: 'Corduroy Shirt',
+        brand: 'Norse & Outdoors',
+        price: 129.00,
+        image: 'https://via.placeholder.com/200x250/cd853f/ffffff?text=Corduroy'
+      },
+      {
+        id: 3,
+        name: 'Slim Fit Jeans',
+        brand: 'Norse & Outdoors',
+        price: 149.00,
+        image: 'https://via.placeholder.com/200x250/000080/ffffff?text=Jeans'
+      },
+      {
+        id: 4,
+        name: 'Organic Cotton Tee',
+        brand: 'Norse & Outdoors',
+        price: 89.00,
+        image: 'https://images.ctfassets.net/hrltx12pl8hq/28ECAQiPJZ78hxatLTa7Ts/2f695d869736ae3b0de3e56ceaca3958/free-nature-images.jpg?fit=fill&w=1200&h=630'
+      },
+      {
+        id: 5,
+        name: 'Ankle Socks',
+        brand: 'Norse & Outdoors',
+        price: 29.00,
+        image: 'https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D'
+      }
+    ]
+
+    const addToCart = () => {
+      if (!selectedSize.value) {
+        alert('Please select a size')
+        return
+      }
+      alert(`Added ${product.name} (Size: ${selectedSize.value}) to cart!`)
+    }
+
+    const addToWishlist = () => {
+      alert(`Added ${product.name} to wishlist!`)
+    }
+
+    return {
+      selectedImageIndex,
+      selectedSize,
+      activeTab,
+      productImages,
+      product,
+      tabs,
+      relatedProducts,
+      recommendedProducts,
+      addToCart,
+      addToWishlist
+    }
+  }
+}
+</script>
+
+<style scoped>
+/* Custom styles if needed */
+</style>

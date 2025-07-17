@@ -7,7 +7,7 @@ header("Access-Control-Allow-Headers: Content-Type");
 require_once('./connection.php');
 $connection = connection();
 
-$sql = "SELECT * FROM product_fishing";
+$sql = "SELECT * FROM product_fishing order by category";
 $result = mysqli_query($connection, $sql);
 
 if (mysqli_num_rows($result) > 0) {

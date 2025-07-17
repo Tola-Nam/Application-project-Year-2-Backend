@@ -1,0 +1,11 @@
+2025-07-14 14:20:49 Admin fetched: Array
+(
+    [admin_id] => 14
+    [first_name] => vong
+    [last_name] => limsrung
+    [email] => vongkimsrung123@gmail.com
+    [gender] => female
+    [phone_number] => 0887991349
+    [password] => $2y$10$2fYPcxVaJuu6jSXrTMTMV.JBzftGRXg7qaf.w7vOq0Q
+)
+2025-07-14 14:20:49 Password mismatch for admin_id 14
