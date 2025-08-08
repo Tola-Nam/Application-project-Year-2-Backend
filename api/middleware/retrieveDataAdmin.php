@@ -1,4 +1,7 @@
 <?php
+
+use JetBrains\PhpStorm\NoReturn;
+
 session_start();
 
 header("Access-Control-Allow-Origin: http://localhost:5173");
@@ -11,9 +14,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-function respond(array $data, int $status = 200): void
+#[NoReturn] function respond(array $data, int $status = 200): void
 {
     http_response_code($status);
+    header('Content-Type: application/json');
     echo json_encode($data);
     exit;
 }
@@ -32,12 +36,11 @@ $email = $data['email'];
 $phone = $data['phone_number'];
 $password = $data['password'];
 
-
 try {
     $pdo = new PDO("mysql:host=localhost;dbname=applicationprojectbackendruppy2", "root", "");
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Query user by email and phone_number only
+    // Query user by email and phone number
     $stmt = $pdo->prepare("SELECT * FROM admins WHERE email = :email AND phone_number = :phone_number");
     $stmt->execute([
         ':email' => $email,
@@ -46,28 +49,40 @@ try {
 
     $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // If no user found
     if (!$admin) {
         respond(['error' => 'Invalid email or phone number'], 401);
     }
 
-    // Verify password with stored hashed password
-    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-    unset($admin['password']); // remove password from response
+    // if (!password_verify($password, $admin['password'])) {
+    //     respond(['error' => 'Incorrect password'], 401);
+    // }
+    if (!password_verify($password, $admin['password'])) {
+        respond([
+            'error' => 'Incorrect password',
+            'input_password' => $password,
+            'stored_hash' => $admin['password'],
+            'password_verified' => password_verify($password, $admin['password'])
+        ], 401);
+    }
 
-    $_SESSION['admin'] = [
+    // Remove password before sending data back or storing in session
+    unset($admin['password']);
+
+    // Store user info in session
+    $_SESSION['admin_id'] = [
         'admin_id' => $admin['admin_id'],
+        'first_name' => $admin['first_name'],
+        'last_name' => $admin['last_name'],
         'email' => $admin['email'],
-        'phone_number' => $admin['phone_number']
+        'phone_number' => $admin['phone_number'],
     ];
 
     respond([
         'message' => 'Login successful',
-        'email' => $email,
-        'phone_number' => $phone,
-        'password' => $hashedPassword,
-        'admin' => $admin
+        'admin' => $_SESSION['admin_id'],
     ]);
+
+
 } catch (PDOException $e) {
     respond(['error' => 'Database error', 'details' => $e->getMessage()], 500);
 }

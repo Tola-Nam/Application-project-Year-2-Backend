@@ -1,0 +1,15 @@
+
+Array
+(
+    [success] => 
+    [message] => Invalid JSON: Syntax error
+    [views] => 0
+    [debug] => Array
+        (
+            [input] => 
+            [decoded] => 
+            [json_error] => Syntax error
+        )
+
+)
+

@@ -30,12 +30,26 @@ if ($pro_id <= 0) {
     exit;
 }
 
-// Delete from DB
-$stmt = $conn->prepare("DELETE FROM product_fishing WHERE pro_id = ?");
-$stmt->bind_param("i", $pro_id);
+// Step 1: Copy to store_destroy
+$stmtInsert = $conn->prepare("
+    INSERT INTO store_destroy (pro_id, pro_name, category,branch, price, stock, description, thumbnail, length, color, pro_viewers)
+    SELECT pro_id, productName, category,brand, price, stock, description, thumbnail, length, color, product_viewers
+    FROM product_fishing WHERE pro_id = ?;");
 
-if ($stmt->execute()) {
-    echo json_encode(['status' => true, 'message' => 'Product deleted successfully']);
+$stmtInsert->bind_param("i", $pro_id);
+
+if (!$stmtInsert->execute()) {
+    http_response_code(500);
+    echo json_encode(['status' => false, 'message' => 'Failed to copy data to warehouse']);
+    exit;
+}
+
+// Step 2: Delete the product from product_fishing
+$stmtDelete = $conn->prepare("DELETE FROM product_fishing WHERE pro_id = ?");
+$stmtDelete->bind_param("i", $pro_id);
+
+if ($stmtDelete->execute()) {
+    echo json_encode(['status' => true, 'message' => 'Product moved to warehouse and deleted successfully']);
 } else {
     http_response_code(500);
     echo json_encode(['status' => false, 'message' => 'Delete failed']);
